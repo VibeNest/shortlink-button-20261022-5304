@@ -4,16 +4,39 @@ services:
       context: .
       dockerfile: deploy/vibenest/Dockerfile
     restart: unless-stopped
-    env_file: .env
-    ports:
-      - "8080:8080"
     volumes:
-      - app_data:/app/data
+    - app_data:/app/data
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/healthz >/dev/null || exit 1"]
+      test:
+      - "CMD-SHELL"
+      - "wget -qO- http://127.0.0.1:8080/healthz >/dev/null || exit 1"
       interval: 30s
       timeout: 3s
       retries: 3
-
+    environment:
+      APP_ADDR: ${APP_ADDR}
+      DATA_DIR: ${DATA_DIR}
+      TRUST_PROXY: ${TRUST_PROXY}
+      COOKIE_SECURE: ${COOKIE_SECURE}
+      VIBENEST_PILOT: ${VIBENEST_PILOT}
+      SETUP_BOOTSTRAP_USER: ${SETUP_BOOTSTRAP_USER}
+      SETUP_BOOTSTRAP_PASSWORD: ${SETUP_BOOTSTRAP_PASSWORD}
+      APP_URL: ${APP_URL}
+      APP_SECRET: ${APP_SECRET}
+      SESSION_TTL_HOURS: ${SESSION_TTL_HOURS}
+      UPLOAD_MAX_MB: ${UPLOAD_MAX_MB}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+    expose:
+    - "8080"
+    deploy:
+      resources:
+        limits:
+          memory: '268435456'
+          cpus: 0.25
+        reservations: {}
+    mem_limit: 268435456
+    memswap_limit: 268435456
+    cpus: 0.25
 volumes:
   app_data:
